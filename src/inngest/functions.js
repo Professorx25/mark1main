@@ -1,10 +1,25 @@
 import { inngest } from "./client";
+import { gemini, createAgent } from "@inngest/agent-kit";
+
+
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
-  { event: "test/hello.world" },
+  { event: "agent/hello" },
+
   async ({ event, step }) => {
-    await step.sleep("wait-a-moment", "1s");
-    return { message: `Hello World` };
+
+    const helloAgent = createAgent({
+      name:"hello-agent",
+      description:"A simple agent that says hello",
+      system:"You are a helpful assistant. Always greet with enthusiasm",
+      model:gemini({model:"gemma-3-1b-it"})
+    })
+
+    const { output } = await helloAgent.run("Say Hello to the user!");
+    
+    return{
+      message: output[0].content
+    }
   },
 );

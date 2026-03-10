@@ -1,9 +1,11 @@
+"use client";
 import ProjectsForm from '@/modules/home/components/project-form'
 import { ImageConfigContext } from 'next/dist/shared/lib/image-config-context.shared-runtime'
 import Image from 'next/image'
 import React from 'react'
 
 const Page = () => {
+
   return (
     <div className=' flex items-center justify-center w-full px-4 py-8'>
       <div className='max-w-5xl w-full'>
