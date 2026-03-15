@@ -16,7 +16,7 @@ const Page = () => {
               alt="Logo"
               width={150}
               height={150}
-              className='hidden md:block invert dark:invert-0'
+              className='hidden md:block invert-0 dark:invert-0'
             />
           </div>
           <h1 className='text-xl md:text-3xl font-bold text-center'>Built Something with ❤️</h1>
