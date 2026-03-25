@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
 import z from "zod";
+import { Spinner } from "@/components/ui/spinner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
 import { Content } from "next/font/google";
 import { onInvoke } from "../actions";
+import { useCreateProject } from "@/modules/projects/hooks/project";
 
 const formSchema = z.object({
     content:z
@@ -77,12 +79,14 @@ const PROJECT_TEMPLATES = [
 const ProjectsForm = () => {
     const [isFocused, setIsFocused] = useState(false);
     const router = useRouter();
+    const { mutateAsync, isPending } = useCreateProject();
 
     const form = useForm({
         resolver:zodResolver(formSchema),
         defaultValues:{
             content:""
-        }
+        },
+        mode:"onChange"
     })
 
     const handleTemplate = (prompt) => {
@@ -91,31 +95,23 @@ const ProjectsForm = () => {
 
     const onSubmit = async(values) =>{
         try {
-            console.log(values)
+            const res = await mutateAsync(values.content);
+            router.push(`/project/${res.id}`);
+            toast.success("Project created successfully");
+            form.reset();
         } 
         catch (error) {
-            
+            toast.error(error.message || "Failed to create project");
         }
-    }
+    };
 
-    const onInvokeAI = async() => {
-        try {
-            const res = await onInvoke()
-            console.log(res)
-            toast.success("Invoking Mark1")
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const isButtonDisabled = isPending || !form.watch("content").trim()
+
 
   return (
     <div className="space-y-8">
         {/* Template grid */}
 
-        {/* For checking the API */}
-        <Button onClick={onInvokeAI}>   
-            Invoke AI agent
-        </Button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {
                 PROJECT_TEMPLATES.map((template, index) => (
@@ -190,11 +186,15 @@ const ProjectsForm = () => {
                             &nbsp; to submit
                         </div>
 
-                        <Button className={cn(
-                            "size-8 rounded-full"
-                            )}
-                            type="submit">
-                            <ArrowUpIcon className="size-4"/>
+                        <Button className={cn("size-8 rounded-full",
+                            isButtonDisabled && "bg-muted-foreground border"
+                        )}
+                        disabled = {isButtonDisabled}
+                        type="submit">
+                            {
+                                isPending ? (<Spinner/>) : (<ArrowUpIcon className="size-4"/>)
+                            }
+                            
                         </Button>
                         
                     </div>

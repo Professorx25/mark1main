@@ -67,7 +67,7 @@ export const getCurrentUser = async() => {
                 id:true,
                 email:true,
                 name:true,
-                iamge:true,
+                image:true,
                 clerkId:true,
             }
         })
