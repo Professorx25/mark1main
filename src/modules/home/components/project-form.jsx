@@ -96,7 +96,7 @@ const ProjectsForm = () => {
     const onSubmit = async(values) =>{
         try {
             const res = await mutateAsync(values.content);
-            router.push(`/project/${res.id}`);
+            router.push(`/projects/${res.id}`);
             toast.success("Project created successfully");
             form.reset();
         } 

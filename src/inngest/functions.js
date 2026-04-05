@@ -19,7 +19,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     // Step-1
     const sandboxId = await step.run("get-sandbox-id", async () => {
-      const sandbox = await Sandbox.create("v0-nextjs-build-new");
+      const sandbox = await Sandbox.create("v1-mark1");
       return sandbox.sandboxId;
     });
 
@@ -151,7 +151,7 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork({
       name: "coding-agent-network",
       agents: [codeAgent],
-      maxIter: 10,
+      maxIter: 3,
 
       router: async ({ network }) => {
         const summary = network.state.data.summary;
