@@ -24,6 +24,7 @@ export const status = async () => {
         msBeforeNext: DURATION * 1000,
         consumedPoints: 0,
         isFirstRequest: true,
+        isPro: hasProAccess, 
         maxPoints
       };      
     }
@@ -34,6 +35,7 @@ export const status = async () => {
       msBeforeNext: result.msBeforeNext || DURATION * 1000,
       consumedPoints: result.consumedPoints || 0,
       isFirstRequest: false,
+      isPro: hasProAccess, 
       maxPoints
     };
 

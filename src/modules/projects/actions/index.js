@@ -24,10 +24,9 @@ export const createProject = async (value) => {
       })
     }
     else{
-      throw new Error({
-        code:"TOO_MANY_REQUESTS",
-        message:"Too many requests"
-      })
+      throw new Error(
+        "Out of credits, Please upgrade your plan to continue."
+      )
     }
   }
 

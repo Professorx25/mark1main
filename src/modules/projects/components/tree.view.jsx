@@ -11,7 +11,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ChevronRightIcon, FileIcon, FolderIcon } from "lucide-react";
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const TreeView = ({ data, value, onSelect }) => {
   return (
@@ -74,17 +74,19 @@ const Tree = ({ item, selectedValue, onSelect, parentPath }) => {
             <span className="truncate">{name}</span>
           </SidebarMenuButton>
         </CollapsibleTrigger>
-        <SidebarMenuSub>
-          {items.map((item, index) => (
-            <Tree
-              key={index}
-              item={item}
-              selectedValue={selectedValue}
-              onSelect={onSelect}
-              parentPath={currentPath}
-            />
-          ))}
-        </SidebarMenuSub>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {items.map((item, index) => (
+              <Tree
+                key={index}
+                item={item}
+                selectedValue={selectedValue}
+                onSelect={onSelect}
+                parentPath={currentPath}
+              />
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
       </Collapsible>
     </SidebarMenuItem>
   );

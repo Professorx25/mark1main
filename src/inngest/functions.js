@@ -4,6 +4,7 @@ import {
   createAgent,
   createTool,
   createNetwork,
+  createState,
 } from "@inngest/agent-kit";
 import Sandbox from "@e2b/code-interpreter";
 import z from "zod";
@@ -13,8 +14,11 @@ import db from "@/lib/db";
 import { MessageRole, MessageType } from "@prisma/client";
 
 export const codeAgentFunction = inngest.createFunction(
-  { id: "code-agent" },
-  { event: "code-agent/run" },
+  { id: "code-agent" ,
+  triggers: [{ event: "code-agent/run" }]
+  },
+  
+  //{ event: "code-agent/run" },
 
   async ({ event, step }) => {
     // Step-1
@@ -22,6 +26,37 @@ export const codeAgentFunction = inngest.createFunction(
       const sandbox = await Sandbox.create("v0-nextjs-build-new");
       return sandbox.sandboxId;
     });
+
+    //Agent memory
+    const previousMessages = await step.run(
+      "get-previous-messages",
+      async () => {
+        const formattedMessages = [];
+        const messages = await db.message.findMany({
+          where: { projectId: event.data.projectId },
+          orderBy: { createdAt: "desc" },
+        });
+
+        for (const message of messages) {
+          formattedMessages.push({
+            type:"text",
+            role: message.role==="ASSISTANT"?"assistant":"user",
+            content: message.content,
+          });
+        }
+        return formattedMessages;
+
+      }
+    );
+
+    const state = createState({
+      summary: "",
+      files: {},
+    },
+    {
+      messages:previousMessages
+    }
+  )
 
     const codeAgent = createAgent({
       name: "code-agent",
@@ -164,13 +199,13 @@ export const codeAgentFunction = inngest.createFunction(
       },
     });
 
-    const result = await network.run(event.data.value);
+    const result = await network.run(event.data.value, {state});
 
     const fragmentTitleGenerator = createAgent({
       name:"fragment-title-generator",
       description:"Generate a title for the fragment",
       system:FRAGMENT_TITLE_PROMPT,
-      model:gemini({model:"gemma-3-1b-it"})
+      model:gemini({model:"gemma-4-26b-a4b-it"})
     })
 
     const responseGenerator = createAgent({
@@ -178,7 +213,7 @@ export const codeAgentFunction = inngest.createFunction(
       description:"Generate a response for the fragment",
       system:RESPONSE_PROMPT,
       model:gemini
-      ({model:"gemma-3-1b-it"})
+      ({model:"gemma-4-26b-a4b-it"})
     })
 
 

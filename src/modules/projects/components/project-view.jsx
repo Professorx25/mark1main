@@ -12,14 +12,18 @@ import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import ProjectHeader from "./project-header";
 import MessageContainer from "./messages-container";
-import { Code, CrownIcon, EyeIcon } from "lucide-react";
+import { Code, CrownIcon, EyeIcon, StarIcon } from "lucide-react";
 import FragmentWeb from "./fragment-web";
 import { FileExplorer } from "./file-explorer";
+import { useStatus } from "@/modules/usage/hooks/usage";
+
 
 
 const ProjectView = ({ projectId }) => {
   const [activeFragment, setActiveFragment] = useState(null);
   const [tabState, setTabState] = useState("preview");
+  const { data: usage } = useStatus();
+  const isPro = usage?.isPro
 
   return (
     <div className="h-screen">
@@ -65,12 +69,19 @@ const ProjectView = ({ projectId }) => {
               </TabsList>
 
               <div className="ml-auto flex items-center gap-x-2">
-                <Button asChild size={"sm"}>
-                  <Link href={"/pricing"}>
-                    <CrownIcon className="size-4 mr-2" />
-                    Upgrade
-                  </Link>
-                </Button>
+                {isPro ? (
+                  <div className="flex items-center gap-x-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-sm font-medium">
+                    <StarIcon className="size-3.5 fill-yellow-500" />
+                      <span>Premium User</span>
+                  </div>
+                  ) : (
+                  <Button asChild size={"sm"}>
+                    <Link href={"/pricing"}>
+                      <CrownIcon className="size-4 mr-2" />
+                        Upgrade
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
 
